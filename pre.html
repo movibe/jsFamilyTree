@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script type="text/javascript" src="libs/jquery/jquery.js"></script>
+  <script type="text/javascript" src="dist/jstree.min.js"></script>
+  <script type="text/javascript">
+    $(function() {
+        $('#container').jstree({
+          "plugins" : [ "themes", "html_data", "ui"]
+          //"core" : {}
+          });
+        });
+  </script>
+</head>
+<body>
+  <div id="container">
+    <ul>
+      <li> <a> Team A's Projects</a>
+        <ul>
+          <li><a> Iteration 1</a>
+            <ul>
+              <li> <a>Story A</a></li>
+              <li><a >Story B</a></li>
+              <li><a href="">Story C</a></li>
+            </ul>
+          </li>
+          <li><a href=""> Iteration 2</a>
+          <ul>
+            <li><a href="">Story D</a></li>
+          </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>
