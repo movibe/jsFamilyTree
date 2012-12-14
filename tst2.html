@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap-responsive.css">
+  <script type="text/javascript" src="libs/jquery/jquery.js"></script>
+    <script type="text/javascript" src="libs/bootstrap/js/bootstrap.min.js"></script>
+  <title></title>
+  <script type="text/javascript" src="dist/jstree.js"></script>
+  <script type="text/javascript">
+      var current_node;
+      $(function() {
+        $('#tree').bind("before.jstree", function (e, data) {
+	        $("#alog").append(data.func + "<br />");
+            }).jstree({
+                themes:{
+                "theme":"apple"
+                },
+          "plugins" : 
+          [ 
+            "themes","json_data","ui","crrm","cookies","dnd","search","types","hotkeys","contextmenu"
+          ],
+            "search" : {
+                "case_insensitive" : true,
+                "ajax" : {
+                    "url" : "/static/v.1.0pre/_docs/_search_result.json"
+                }
+            },
+          "json_data" : {
+                "data" : [
+                    {
+                        "attr" : { "id" : "root_node" },
+                        "data" : "A closed node",
+                        "state" : "closed"
+                    }
+                ],
+                "ajax" : {
+                    "url" : "/static/v.1.0pre/_docs/_search_data.json",
+                    "data" : function (n) {
+                        return { id : n.attr ? n.attr("id") : 0 };
+                    }
+                }
+          }})
+        .bind("select_node.jstree", function (event, data) {
+                current_node = data.rslt.obj;
+                })
+        .bind("search.jstree", function (event, data) {
+            alert("Found " + data.rslt.nodes.length + " nodes matching '" + data.rslt.str + "'.");
+            });
+        $("#search input").keyup(function () {
+                var content = $("#search input").val();
+                $("#tree").jstree("search",content);
+            });
+        });
+$(function () {
+        $("#mmenu li").click(function () {
+        switch(this.id) {
+            case "addson":
+            if (current_node.attr("class").indexOf("wife") != -1){
+                alert("you cannot add a offspring from a wife!");
+                break;
+            }
+            new_node = $("#tree").jstree( "create_node", current_node,
+                {"title":$("#text").val(),
+                 "li_attr":{ "class" : "male"}
+                },
+                "inside",
+                function(){
+                    $("#tree").jstree( "open_node", current_node);
+                }
+                );
+            $("#tree").jstree( "edit", new_node );
+            break;
+            case "adddaughter":
+            if (current_node.attr("class").indexOf("wife") != -1){
+                alert("you cannot add a offspring from a wife!");
+                break;
+            }
+            new_node = $("#tree").jstree( "create_node", current_node,
+                {"title":$("#text").val(),
+                 "li_attr":{ "class" : "female"}
+                },
+                "inside",
+                function(){
+                    $("#tree").jstree( "open_node", current_node);
+                }
+                );
+            $("#tree").jstree( "edit", new_node );
+            break;
+            case "addwife":
+            if (current_node.attr("class").indexOf("wife") != -1){
+                alert("you cannot add a wife from a wife!");
+                break;
+            }
+            if (current_node.attr("class").indexOf("female") != -1){
+                alert("you cannot add a wife from a female!");
+                break;
+            }
+            new_node = $("#tree").jstree( "create_node", current_node,
+                {"title":$("#text").val(),
+                 "li_attr":{ "class" : "female wife"}
+                },
+                "inside",
+                function(){
+                    $("#tree").jstree( "open_node", current_node);
+                }
+                );
+            $("#tree").jstree( "edit", new_node );
+            $(".wife").children('a').children('i').attr("class","icon-heart");
+            break;
+            case "rename":
+                    $("#tree").jstree( "edit", current_node);
+            break;
+            case "remove":
+            $("#tree").jstree("delete_node", current_node );
+            break;
+            case "expand":
+            $("#tree").jstree("open_all");
+            break;
+            case "close":
+            $("#tree").jstree("close_all");
+            break;
+            case "text": break;
+            default:
+                $("#tree").jstree(this.id);
+                break;
+        }
+    });
+});
+  </script>
+</head>
+<body>
+    <!--
+<div id="mmenu" >
+<input type="button" id="addson" class="btn" value="add son" >
+<input type="button" id="adddaughter" class="btn" value="add daughter" >
+<input type="button" id="addwife" class="btn" value="add wife" >
+<input type="button" id="rename" class="btn" value="rename" >
+<input type="button" id="remove" class="btn" value="remove" >
+<input type="button" id="search" class="btn" value="search" >
+<input type="text" id="text" value="" >
+</div>
+-->
+<div class="navbar navbar-static">
+    <div class="navbar-inner" style="margin: 2;">
+        <div class="container">
+            <a class="brand" href="#">Family Tree</a>
+            <ul class="nav" role="navigation">
+                <li class="dropdown">
+                <a role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Edit</a>
+                <ul class="dropdown-menu" id="mmenu">
+                    <li id="addson"><a href="#">Add son</a></li>
+                    <li id="adddaughter"><a href="#">Add daughter</a></li>
+                    <li id="addwife"><a href="#">Add wife</a></li>
+                    <li class="divider"></li>
+                    <li id="rename"><a href="#">rename</a></li>
+                    <li class="divider"></li>
+                    <li id="remove"><a href="#">remove node</a></li>
+                </ul>
+                </li>
+            </ul>
+            <ul class="nav" role="navigation">
+                <li class="dropdown">
+                <a role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">View</a>
+                <ul class="dropdown-menu" id="mmenu">
+                    <li id="expand"><a href="#">expand all</a></li>
+                    <li id="close"><a href="#">close all</a></li>
+                </ul>
+                </li>
+            </ul>
+            <!--
+            <ul class="nav" role="navigation">
+                <li class="dropdown">
+                <a role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Search</a>
+                <ul class="dropdown-menu" id="mmenu">
+                    <li id="search"><a href="#">search</a></li>
+                    <li id="close"><a href="#">close all</a></li>
+                </ul>
+
+                </li>
+            </ul>
+            -->
+            <form class="navbar-search pull-right" id="search">
+                <input type="text" class="search-query" placeholder="Search">
+            </form>
+        </div>
+    </div>
+</div>
+    <div id="tree" style="margin-top:10px">
+        <ul>
+            <li><a href="">Richard</a>
+            <ul>
+                <li><a href="">Edward IV</a></li>
+                <li><a href="">Clarence</a></li>
+                <li><a href="">Richard III</a></li>
+            </ul></li>
+
+        </ul>
+
+
+    </div>
+    <div class="container" style="marginh:1000px">
+    </div>
+    <!--
+    <footer style='text-align:center;font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;'>
+        © 2012 Powered By OMeGa, rve Saito, nemomojie and starjesse. All rights reserved.
+        </footer>
+        -->
+</body>
+</html>
